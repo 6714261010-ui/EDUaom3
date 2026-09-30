@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>วิทยาการคำนวณ · อัลกอริทึมและการแก้ปัญหา</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&family=Trirong:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== THEME : LIGHT (วิชาการ สุขุม ถนอมสายตา ไม่แสบตา) ===== */
+:root{
+  --f-head:'Trirong',serif;
+  --f-body:'Sarabun',sans-serif;
+  --fw-body:300;
+  --fs-body:16.5px;
+
+  /* สีหลักสไตล์วิชาการ */
+  --navy:#0f2137;
+  --navy2:#1b324f;
+  --gold:#946816;
+  --gold2:#b37e1b;
+  
+  /* โทนพื้นหลังกระดาษถนอมสายตาลดการสะท้อนแสง */
+  --paper:#f8f9fa;
+  --paper2:#eff2f5;
+  --alt-bg:rgba(239,242,245,.85);
+  --card:#ffffff;
+  
+  /* เส้นคั่นและข้อความ */
+  --line:#dfe4ea;
+  --line2:#e9edf2;
+  --body:#384556;
+  --muted:#6e7c8e;
+  
+  /* ตาราง หัวข้อ และปุ่ม */
+  --th-bg:#0f2137;
+  --th-fg:#f7f9fb;
+  --foot-bg:#0f2137;
+  --foot-fg:#c4cfde;
+  --foot-h:#f0d79e;
+  --btn-p-bg:#0f2137;
+  --btn-p-fg:#f7f9fb;
+  --btn-p-hv:#1b324f;
+  --hdr-bg:rgba(248,249,250,.92);
+  --fx:#946816;
+  --fx-op:.32;
+
+  --r:10px;
+  --bw:1px;
+  --sh:0 1px 3px rgba(15,33,55,.05), 0 6px 18px rgba(15,33,55,.04);
+  --sh2:0 3px 8px rgba(15,33,55,.06), 0 14px 30px rgba(15,33,55,.08);
+  --max:1180px;
+}
+
+/* ===== THEME : DARK ===== */
+[data-theme="dark"]{
+  --navy:#e9eef6;
+  --navy2:#cdd7e4;
+  --gold:#d9ab4b;
+  --gold2:#eec86f;
+  --paper:#0d141e;
+  --paper2:#121b26;
+  --alt-bg:rgba(18,27,38,.72);
+  --card:#18222f;
+  --line:#2a3646;
+  --line2:#222d3c;
+  --body:#a9b4c3;
+  --muted:#75828f;
+  --th-bg:#1e2937;
+  --th-fg:#eec86f;
+  --foot-bg:#080e16;
+  --foot-fg:#99a5b4;
+  --foot-h:#eec86f;
+  --btn-p-bg:#d9ab4b;
+  --btn-p-fg:#121a26;
+  --btn-p-hv:#eec86f;
+  --hdr-bg:rgba(13,20,30,.86);
+  --fx:#d9ab4b;
+  --fx-op:.5;
+  --sh:0 1px 2px rgba(0,0,0,.30), 0 8px 24px rgba(0,0,0,.34);
+  --sh2:0 2px 6px rgba(0,0,0,.34), 0 18px 44px rgba(0,0,0,.44);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{
+  scroll-behavior:smooth;scroll-padding-top:78px;
+  background:var(--paper);transition:background .35s ease;
+}
+body{
+  font-family:var(--f-body);
+  font-weight:var(--fw-body);
+  font-size:var(--fs-body);
+  line-height:1.95;
+  color:var(--body);background:transparent;
+  -webkit-font-smoothing:antialiased;
+  transition:color .3s ease;
+}
+h1,h2,h3,h4{font-family:var(--f-head);font-weight:600;color:var(--navy);line-height:1.45;transition:color .3s ease}
+a{color:var(--navy);text-decoration:none}
+img,iframe{max-width:100%;display:block}
+
+/* ===== พื้นหลังสัญลักษณ์ร่วง ===== */
+#fx{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:var(--fx-op);transition:opacity .4s}
+
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+.sec{padding:96px 0;border-top:1px solid var(--line2);transition:border-color .35s}
+.sec.alt{background:var(--alt-bg);backdrop-filter:blur(3px);transition:background .35s ease}
+
+/* ===== HEADER ===== */
+header{
+  position:sticky;top:0;z-index:60;
+  background:var(--hdr-bg);backdrop-filter:saturate(160%) blur(12px);
+  border-bottom:1px solid var(--line);transition:background .35s ease,border-color .35s;
+}
+.nav{display:flex;align-items:center;justify-content:space-between;height:70px;gap:12px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .mark{
+  width:38px;height:38px;border-radius:6px;
+  background:linear-gradient(145deg,var(--btn-p-bg),var(--btn-p-hv));
+  color:var(--btn-p-fg);display:grid;place-items:center;
+  font-family:var(--f-head);font-size:19px;font-weight:700;
+  box-shadow:var(--sh);transition:.35s;
+}
+.brand b{font-family:var(--f-head);font-size:18px;color:var(--navy);font-weight:600;letter-spacing:.2px}
+.brand small{display:block;font-size:11.5px;color:var(--muted);letter-spacing:1.6px;text-transform:uppercase;line-height:1.2}
+.menu{display:flex;gap:4px;align-items:center}
+.menu a{font-size:14.5px;color:var(--body);padding:8px 13px;border-radius:6px;transition:.22s;font-weight:400}
+.menu a:hover{color:var(--gold);background:var(--paper2)}
+.tools{display:flex;align-items:center;gap:8px}
+.tbtn{
+  height:38px;min-width:38px;padding:0 12px;border-radius:8px;cursor:pointer;
+  border:var(--bw) solid var(--line);background:var(--card);color:var(--navy);
+  display:flex;align-items:center;gap:7px;justify-content:center;
+  font-size:14.5px;font-family:var(--f-body);font-weight:500;transition:.25s;
+}
+.tbtn:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-1px)}
+.tbtn .tlabel{font-size:13px}
+@media(max-width:1080px){.tbtn .tlabel{display:none}}
+.burger{display:none}
+
+/* ===== HERO ===== */
+.hero{padding:104px 0 88px;position:relative;overflow:hidden}
+.hero:before{
+  content:'';position:absolute;right:-180px;top:-180px;width:560px;height:560px;
+  background:radial-gradient(circle,rgba(148,104,22,.08),transparent 65%);
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:9px;
+  font-size:12.5px;letter-spacing:2.4px;text-transform:uppercase;
+  color:var(--gold);font-weight:600;margin-bottom:22px;
+}
+.eyebrow:before{content:'';width:34px;height:1.5px;background:var(--gold)}
+.hero h1{font-size:clamp(34px,5.2vw,56px);font-weight:700;letter-spacing:-.4px;margin-bottom:22px}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.lead{font-size:18px;max-width:640px}
+.cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:36px}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:13px 26px;border-radius:8px;font-size:15px;font-weight:500;
+  transition:.25s;border:var(--bw) solid transparent;cursor:pointer;font-family:var(--f-body);
+}
+.btn-p{background:var(--btn-p-bg);color:var(--btn-p-fg);box-shadow:var(--sh)}
+.btn-p:hover{background:var(--btn-p-hv);transform:translateY(-2px);box-shadow:var(--sh2)}
+.btn-s{background:var(--card);color:var(--navy);border-color:var(--line)}
+.btn-s:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:var(--bw) solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:56px}
+.stat{background:var(--card);padding:26px 22px;text-align:center;transition:background .35s}
+.stat b{display:block;font-family:var(--f-head);font-size:30px;color:var(--navy);font-weight:700}
+.stat span{font-size:13px;color:var(--muted);letter-spacing:.6px}
+
+/* ===== SECTION HEAD ===== */
+.shead{margin-bottom:52px;max-width:720px}
+.sno{font-family:var(--f-head);font-size:13px;color:var(--gold);letter-spacing:3px;font-weight:600;display:block;margin-bottom:12px}
+.shead h2{font-size:clamp(26px,3.4vw,36px);font-weight:700;margin-bottom:14px}
+.shead p{font-size:16.5px}
+
+/* ===== GRID / PANEL ===== */
+.grid{display:grid;gap:22px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.panel{
+  background:var(--card);border:var(--bw) solid var(--line);border-radius:var(--r);
+  padding:30px;transition:.28s;position:relative;
+}
+.panel:hover{transform:translateY(-3px);box-shadow:var(--sh2);border-color:var(--gold)}
+.panel h3{font-size:19.5px;margin-bottom:12px}
+.panel p{font-size:15.5px;line-height:1.9}
+.num{
+  display:grid;place-items:center;width:38px;height:38px;border-radius:6px;
+  background:var(--paper2);color:var(--navy);
+  font-family:var(--f-head);font-size:16px;font-weight:700;
+  margin-bottom:18px;transition:.28s;
+}
+.panel:hover .num{background:var(--gold);color:#fff}
+.meta{font-size:12.5px;color:var(--muted);letter-spacing:.7px;margin-bottom:8px}
+
+/* ===== TABLE ===== */
+.tbl{width:100%;border-collapse:collapse;background:var(--card);
+  border:var(--bw) solid var(--line);border-radius:var(--r);overflow:hidden;font-size:15px;transition:background .35s}
+.tbl th{
+  background:var(--th-bg);color:var(--th-fg);font-family:var(--f-head);
+  font-weight:500;text-align:left;padding:15px 18px;font-size:15px;letter-spacing:.3px;transition:.35s;
+}
+.tbl td{padding:15px 18px;border-top:1px solid var(--line2);vertical-align:middle}
+.tbl tr:nth-child(even) td{background:var(--paper2)}
+.tbl td:first-child{color:var(--navy);font-weight:500;white-space:nowrap}
+
+/* ปุ่มลิงก์ในตาราง */
+.tbl-link{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:6px;font-size:13.5px;
+  font-weight:500;text-decoration:none;
+  background:var(--paper2);color:var(--navy);border:var(--bw) solid var(--line);
+  transition:.22s ease;white-space:nowrap;
+}
+.tbl-link:hover{
+  background:var(--gold);color:#fff;border-color:var(--gold);
+  transform:translateY(-1px);box-shadow:var(--sh);
+}
+
+/* ===== TIMELINE ===== */
+.tl{position:relative;padding-left:40px}
+.tl:before{content:'';position:absolute;left:11px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl-item{position:relative;padding-bottom:40px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item:before{
+  content:'';position:absolute;left:-34px;top:9px;width:11px;height:11px;
+  border-radius:50%;background:var(--card);border:2px solid var(--gold);
+}
+.tl-item h3{font-size:20px;margin-bottom:10px}
+
+/* ===== PODCAST CARD ===== */
+.ep{background:var(--card);border:var(--bw) solid var(--line);border-radius:var(--r);padding:24px;transition:.28s}
+.ep:hover{box-shadow:var(--sh2);border-color:var(--gold)}
+.ep h3{font-size:19.5px;margin-bottom:14px}
+.ep ul{list-style:none;font-size:15px;margin-top:18px}
+.ep ul li{padding-left:20px;position:relative;margin-bottom:7px}
+.ep ul li:before{content:'';position:absolute;left:0;top:13px;width:7px;height:2px;background:var(--gold)}
+
+/* ===== VIDEO ===== */
+.video-card{background:var(--card);border:var(--bw) solid var(--line);border-radius:var(--r);overflow:hidden;padding:18px;transition:.28s}
+.video-card:hover{transform:translateY(-3px);box-shadow:var(--sh2);border-color:var(--gold)}
+.video-card h3{font-size:18px;margin:16px 0 6px}
+.video-card p{font-size:14.5px;line-height:1.75}
+.vframe{position:relative;padding-top:56.25%;border-radius:6px;overflow:hidden;border:1px solid var(--line);background:#000}
+.vframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vcover{
+  position:absolute;inset:0;z-index:2;background-size:cover;background-position:center;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.35s ease;
+}
+.vcover::before{content:'';position:absolute;inset:0;background:rgba(15,33,55,.32);transition:.35s ease}
+.vcover:hover::before{background:rgba(15,33,55,.12)}
+.vplay{
+  position:relative;z-index:3;width:58px;height:58px;border-radius:50%;border:none;
+  background:var(--gold);color:#fff;font-size:20px;display:grid;place-items:center;
+  padding-left:4px;cursor:pointer;box-shadow:var(--sh2);
+  transition:.3s cubic-bezier(.175,.885,.32,1.275);
+}
+.vcover:hover .vplay{transform:scale(1.1);background:var(--gold2)}
+.vframe.is-playing .vcover{opacity:0;pointer-events:none}
+
+/* ===== E-BOOK EMBED READER ===== */
+.ebook-frame{
+  position:relative;
+  width:100%;
+  height:620px;
+  border-radius:var(--r);
+  overflow:hidden;
+  border:var(--bw) solid var(--line);
+  background:var(--card);
+  box-shadow:var(--sh);
+}
+.ebook-frame iframe{
+  width:100%;
+  height:100%;
+  border:0;
+}
+
+/* ===== FOOTER ===== */
+footer{background:var(--foot-bg);color:var(--foot-fg);padding:64px 0 30px;font-size:14.5px;transition:background .35s}
+footer h4{color:var(--foot-h);font-size:16px;margin-bottom:16px;font-weight:500}
+footer a{color:var(--foot-fg);transition:.2s;font-size:14.5px}
+footer a:hover{color:var(--gold2)}
+.fgrid{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:44px;margin-bottom:44px}
+.flist{list-style:none;display:grid;gap:9px}
+.fbot{border-top:1px solid rgba(255,255,255,.10);padding-top:24px;
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:13px;opacity:.78}
+
+/* ===== REVEAL ===== */
+.rv{opacity:0;transform:translateY(20px);transition:.65s cubic-bezier(.22,1,.36,1)}
+.rv.in{opacity:1;transform:none}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:920px){
+  .g3{grid-template-columns:repeat(2,1fr)}
+  .fgrid{grid-template-columns:1fr 1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .ebook-frame{height:500px}
+}
+@media(max-width:760px){
+  .sec{padding:68px 0}
+  .hero{padding:72px 0 60px}
+  .burger{display:flex}
+  .menu{
+    display:none;position:absolute;top:70px;left:0;right:0;
+    background:var(--paper);border-bottom:1px solid var(--line);
+    flex-direction:column;align-items:stretch;padding:12px 24px 20px;gap:2px;box-shadow:var(--sh2);
+  }
+  .menu.open{display:flex}
+  .g2,.g3,.fgrid{grid-template-columns:1fr}
+  .panel,.ep,.video-card{padding:20px}
+  .tbl{display:block;overflow-x:auto;white-space:nowrap}
+  .ebook-frame{height:420px}
+}
+@media(prefers-reduced-motion:reduce){
+  #fx{display:none}
+  .rv{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="fx"></canvas>
+
+<!-- ================= HEADER ================= -->
+<header>
+  <div class="wrap nav">
+    <a href="#top" class="brand">
+      <span class="mark">ว</span>
+      <span>
+        <b>วิทยาการคำนวณ</b>
+        <small>Computing Science</small>
+      </span>
+    </a>
+    <nav class="menu" id="menu">
+      <a href="#lesson">บทเรียน</a>
+      <a href="#content">เนื้อหา</a>
+      <a href="#podcast">พอดแคสต์</a>
+      <a href="#video">วิดีโอ</a>
+      <a href="#ai">สื่อ AI</a>
+      <a href="#quiz">แบบทดสอบ</a>
+      <a href="#ebook">E-Book</a>
+    </nav>
+    <div class="tools">
+      <button class="tbtn" id="themeBtn" aria-label="สลับโหมดมืด/สว่าง" title="สลับโหมด: สว่าง / มืด">
+        <span id="themeIcon">☾</span><span class="tlabel" id="themeLabel">โหมดสว่าง</span>
+      </button>
+      <button class="tbtn burger" id="burger" aria-label="เมนู">☰</button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="top">
+  <div class="wrap">
+    <span class="eyebrow rv">หน่วยการเรียนรู้ที่ 1</span>
+    <h1 class="rv">อัลกอริทึมและ<br><em>การแก้ปัญหา</em>อย่างเป็นขั้นตอน</h1>
+    <p class="lead rv">
+      เรียนรู้วิธีคิดแบบคอมพิวเตอร์ ตั้งแต่การนิยามปัญหา การเขียนผังงาน
+      ไปจนถึงการลงมือเขียนโปรแกรมแรกของตัวเอง พร้อมสื่อประกอบครบทุกรูปแบบ
+      ทั้งพอดแคสต์ วิดีโอ แบบทดสอบ และหนังสืออิเล็กทรอนิกส์
+    </p>
+    <div class="cta rv">
+      <a href="#content" class="btn btn-p">เริ่มเรียนบทเรียน →</a>
+      <a href="#podcast" class="btn btn-s">▸ ฟังพอดแคสต์</a>
+    </div>
+
+    <div class="stats rv">
+      <div class="stat"><b>2</b><span>ตอนพอดแคสต์</span></div>
+      <div class="stat"><b>6</b><span>นาทีเสียง</span></div>
+      <div class="stat"><b>3</b><span>เครื่องมือ AI</span></div>
+      <div class="stat"><b>3</b><span>ชุดแบบทดสอบ</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 01 LESSON ================= -->
+<section class="sec alt" id="lesson">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="sno">ส่วนที่ 01</span>
+      <h2>รายละเอียดบทเรียน</h2>
+      <p>ภาพรวมของหน่วยการเรียนรู้ ตัวชี้วัดมาตรฐานกลุ่มสาระวิทยาศาสตร์และเทคโนโลยี และสมรรถนะสำคัญ</p>
+    </div>
+
+    <table class="tbl rv">
+      <thead>
+        <tr><th style="width:190px">หัวข้อ</th><th>รายละเอียด</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>รหัสวิชา / กลุ่มสาระ</td><td>ว21104 · กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี</td></tr>
+        <tr><td>ระดับชั้น</td><td>มัธยมศึกษาปีที่ 1</td></tr>
+        <tr>
+          <td>ตัวชี้วัด ว 4.1<br><small style="color:var(--muted);font-weight:300">การออกแบบและเทคโนโลยี</small></td>
+          <td>
+            <b>ว 4.1 ม.1/3</b> ออกแบบวิธีการแก้ปัญหา โดยวิเคราะห์เปรียบเทียบ และตัดสินใจเลือกข้อมูลที่จำเป็น นำเสนอแนวทางการแก้ปัญหาให้ผู้อื่นเข้าใจ วางแผนและดำเนินการแก้ปัญหาอย่างเป็นขั้นตอน
+          </td>
+        </tr>
+        <tr>
+          <td>ตัวชี้วัด ว 4.2<br><small style="color:var(--muted);font-weight:300">วิทยาการคำนวณ</small></td>
+          <td>
+            <b>ว 4.2 ม.1/1</b> ออกแบบอัลกอริทึมที่ใช้แนวคิดเชิงนามธรรมเพื่อแก้ปัญหาหรืออธิบายการทำงานที่พบในชีวิตจริง<br>
+            <b>ว 4.2 ม.1/2</b> ออกแบบและเขียนโปรแกรมอย่างง่าย เพื่อแก้ปัญหาทางคณิตศาสตร์หรือวิทยาศาสตร์
+          </td>
+        </tr>
+        <tr><td>สมรรถนะสำคัญ</td><td>ความสามารถในการคิดวิเคราะห์ · การแก้ปัญหาอย่างเป็นระบบ · การใช้เทคโนโลยีสารสนเทศ</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= 02 CONTENT ================= -->
+<section class="sec" id="content">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="sno">ส่วนที่ 02</span>
+      <h2>เนื้อหาบทเรียน</h2>
+      <p>แบ่งเป็น 4 ตอน เรียงตามลำดับความรู้จากง่ายไปยาก เรียนต่อเนื่องหรือเลือกเฉพาะหัวข้อที่สนใจได้</p>
+    </div>
+
+    <div class="tl rv">
+      <div class="tl-item">
+        <div class="meta">ตอนที่ 1</div>
+        <h3>อัลกอริทึมคืออะไร และอยู่ใกล้ตัวเราอย่างไร</h3>
+        <p>นิยามอัลกอริทึมด้วยภาษาที่เข้าใจง่าย ยกตัวอย่างกิจวัตรประจำวันที่เป็นอัลกอริทึมโดยที่เราไม่รู้ตัว เช่น การแปรงฟัน การเดินทางไปโรงเรียน และการทำอาหาร พร้อมเทคนิคแตกปัญหาใหญ่ให้เป็นงานย่อย 3 ขั้นตอน</p>
+      </div>
+      <div class="tl-item">
+        <div class="meta">ตอนที่ 2</div>
+        <h3>อ่านและเขียนผังงานให้เป็นภายใน 10 นาที</h3>
+        <p>อธิบายสัญลักษณ์หลักของผังงานทีละสัญลักษณ์ พร้อมวิธีจดจำที่ไม่ต้องอาศัยการท่องจำ เปรียบเทียบโครงสร้างแบบลำดับ แบบทางเลือก และแบบวนซ้ำ ผ่านสถานการณ์การตัดสินใจในชีวิตจริง</p>
+      </div>
+      <div class="tl-item">
+        <div class="meta">ตอนที่ 3</div>
+        <h3>เขียนโปรแกรมแรกไม่ยากอย่างที่คิด</h3>
+        <p>พาเขียนโปรแกรมแรกทีละบรรทัด อธิบายว่าคอมพิวเตอร์ตีความคำสั่งอย่างไร แนะนำวิธีอ่านข้อความแจ้งข้อผิดพลาดให้เข้าใจแทนการตกใจ และวิธีไล่ตรวจโปรแกรมด้วยตัวเอง</p>
+      </div>
+      <div class="tl-item">
+        <div class="meta">ตอนที่ 4</div>
+        <h3>การใช้ข้อมูลและเทคโนโลยีอย่างปลอดภัย</h3>
+        <p>แนวทางตั้งรหัสผ่านที่ปลอดภัย การสังเกตลิงก์หลอกลวง และการแชร์ข้อมูลส่วนตัวอย่างระมัดระวัง ปิดท้ายด้วยเช็กลิสต์ความปลอดภัย 5 ข้อที่นำไปใช้ได้ทันที</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 PODCAST (ดึงจาก YouTube) ================= -->
+<section class="sec alt" id="podcast">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="sno">ส่วนที่ 03</span>
+      <h2>พอดแคสต์ประกอบบทเรียน</h2>
+      <p>เสียงบรรยาย 2 ตอนหลัก กดรับฟังผ่าน YouTube ได้ทันทีในหน้านี้ เหมาะกับการทบทวนบทเรียนได้ทุกที่ทุกเวลา</p>
+    </div>
+
+    <div class="grid g2 rv">
+
+      <!-- พอดแคสต์ ตอนที่ 1: 1CImwU4-Cxw -->
+      <article class="ep">
+        <span class="num">๑</span>
+        <div class="meta">ตอนที่ 1 · ความยาวประมาณ 3 นาที</div>
+        <h3>อัลกอริทึมคืออะไร และอยู่ใกล้ตัวเราอย่างไร</h3>
+        
+        <div class="vframe">
+          <div class="vcover" style="background-image:url('https://img.youtube.com/vi/1CImwU4-Cxw/hqdefault.jpg');">
+            <button class="vplay" aria-label="รับฟังพอดแคสต์ตอนที่ 1">▶</button>
+          </div>
+          <iframe src="" data-src="https://www.youtube.com/embed/1CImwU4-Cxw?rel=0&autoplay=1"
+            title="พอดแคสต์วิทยาการคำนวณ ตอนที่ 1" allowfullscreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"></iframe>
+        </div>
+
+        <ul>
+          <li>นิยามอัลกอริทึมด้วยภาษาที่เข้าใจง่าย</li>
+          <li>กิจวัตรประจำวันที่เป็นอัลกอริทึมโดยไม่รู้ตัว</li>
+          <li>เทคนิคแตกปัญหาใหญ่ให้เป็นงานย่อย 3 ขั้นตอน</li>
+        </ul>
+      </article>
+
+      <!-- พอดแคสต์ ตอนที่ 2: wIv_SloEq9U -->
+      <article class="ep">
+        <span class="num">๒</span>
+        <div class="meta">ตอนที่ 2 · ความยาวประมาณ 3 นาที</div>
+        <h3>อ่านและเขียนผังงานให้เป็นภายใน 10 นาที</h3>
+        
+        <div class="vframe">
+          <div class="vcover" style="background-image:url('https://img.youtube.com/vi/wIv_SloEq9U/hqdefault.jpg');">
+            <button class="vplay" aria-label="รับฟังพอดแคสต์ตอนที่ 2">▶</button>
+          </div>
+          <iframe src="" data-src="https://www.youtube.com/embed/wIv_SloEq9U?rel=0&autoplay=1"
+            title="พอดแคสต์วิทยาการคำนวณ ตอนที่ 2" allowfullscreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"></iframe>
+        </div>
+
+        <ul>
+          <li>สัญลักษณ์หลักของผังงานทีละสัญลักษณ์</li>
+          <li>เทียบโครงสร้างลำดับ ทางเลือก และวนซ้ำ</li>
+          <li>ข้อผิดพลาดที่ผู้เรียนเขียนผิดบ่อยที่สุด</li>
+        </ul>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 VIDEO ================= -->
+<section class="sec" id="video">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="sno">ส่วนที่ 04</span>
+      <h2>หนังสั้นและวิดีโอบทเรียน</h2>
+      <p>สรุปเนื้อหาทั้งหน่วยพร้อมภาพประกอบและตัวอย่างผังงานแบบเคลื่อนไหว (กดเลือกรับชมได้ 2 ตอน)</p>
+    </div>
+
+    <div class="grid g2 rv">
+      <!-- วิดีโอคลิปที่ 1: dVQkEHTSLcs -->
+      <div class="video-card">
+        <div class="vframe">
+          <div class="vcover" style="background-image:url('https://img.youtube.com/vi/dVQkEHTSLcs/hqdefault.jpg');">
+            <button class="vplay" aria-label="เล่นวิดีโอตอนที่ 1">▶</button>
+          </div>
+          <iframe src="" data-src="https://www.youtube.com/embed/dVQkEHTSLcs?rel=0&autoplay=1"
+            title="วิดีโอบทเรียนอัลกอริทึม ตอนที่ 1" allowfullscreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"></iframe>
+        </div>
+        <div class="meta" style="margin-top:14px">วิดีโอตอนที่ 1</div>
+        <h3>The Mind of Man</h3>
+        <p>หนังสั้นเชิงคุณธรรม</p>
+      </div>
+
+      <!-- วิดีโอคลิปที่ 2: 1qNlepUloXw -->
+      <div class="video-card">
+        <div class="vframe">
+          <div class="vcover" style="background-image:url('https://img.youtube.com/vi/1qNlepUloXw/hqdefault.jpg');">
+            <button class="vplay" aria-label="เล่นวิดีโอตอนที่ 2">▶</button>
+          </div>
+          <iframe src="" data-src="https://www.youtube.com/embed/1qNlepUloXw?rel=0&autoplay=1"
+            title="วิดีโอบทเรียนอัลกอริทึม ตอนที่ 2" allowfullscreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"></iframe>
+        </div>
+        <div class="meta" style="margin-top:14px">วิดีโอตอนที่ 2</div>
+        <h3>การเขียนผังงาน (Flowchart) เบื้องต้น</h3>
+        <p>เรียนรู้สัญลักษณ์ผังงานและตัวอย่างการเขียนโครงสร้างแบบต่าง ๆ อย่างเข้าใจง่าย</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 AI ================= -->
+<section class="sec alt" id="ai">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="sno">ส่วนที่ 05</span>
+      <h2>เครื่องมือ AI ที่ใช้ผลิตสื่อ</h2>
+      <p>เปิดเผยขั้นตอนการผลิตสื่อการสอนทั้งหมด เพื่อให้ผู้เรียนนำไปต่อยอดสร้างสื่อของตัวเองได้ พร้อมไฟล์แนบผลงานจริงให้ดาวน์โหลด</p>
+    </div>
+
+    <table class="tbl rv" style="margin-bottom:24px">
+      <thead>
+        <tr>
+          <th style="width:140px">เครื่องมือ</th>
+          <th style="width:190px">ใช้ทำอะไร</th>
+          <th>รายละเอียดการใช้งาน</th>
+          <th style="width:190px">ไฟล์แนบ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ChatGPT</td>
+          <td>ร่างเนื้อหาและรูปภาพ</td>
+          <td>ช่วยร่างโครงบทเรียน สคริปต์พอดแคสต์ และสร้างภาพประกอบแนวคิดการเรียนรู้</td>
+          <td>
+            <a href="Scrip.pdf" download class="tbl-link">
+              📎 ไฟล์สคริปต์ (PDF)
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td>Gemini</td>
+          <td>ออกแบบภาพปกคลิป</td>
+          <td>ช่วยวิเคราะห์ธีม ออกแบบ และสร้างภาพปกวิดีโอบทเรียนและพอดแคสต์ให้สวยงามน่าดึงดูด</td>
+          <td>
+            <a href="Gemini.jpg" download class="tbl-link">
+              📎 ภาพปกคลิป (JPG)
+            </a>
+          </td>
+        </tr>
+        <tr>
+          <td>NotebookLM</td>
+          <td>สังเคราะห์เนื้อหาและไฟล์สไลด์</td>
+          <td>ประมวลผลข้อมูลอ้างอิง สรุปสาระสำคัญ และจัดทำโครงสร้างไฟล์สไลด์ประกอบการสอน</td>
+          <td>
+            <a href="Flowchart_Logic_Blueprint.pptx" download class="tbl-link">
+              📎 ไฟล์สไลด์ (PPTX)
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="grid g3 rv">
+      <div class="panel"><span class="num">1</span><h3>วางโครงเนื้อหา</h3><p>กำหนดตัวชี้วัดและลำดับการเรียนรู้ก่อนเริ่มผลิตสื่อทุกชิ้น</p></div>
+      <div class="panel"><span class="num">2</span><h3>ผลิตและตรวจแก้</h3><p>ใช้ AI ช่วยร่าง แล้วผู้สอนตรวจสอบความถูกต้องทางวิชาการทุกบรรทัด</p></div>
+      <div class="panel"><span class="num">3</span><h3>ทดลองใช้จริง</h3><p>นำไปใช้กับผู้เรียนจริง เก็บข้อเสนอแนะ แล้วปรับปรุงก่อนเผยแพร่</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 06 QUIZ ================= -->
+<section class="sec" id="quiz">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="sno">ส่วนที่ 06</span>
+      <h2>แบบทดสอบ</h2>
+      <p>เลือกทำแบบทดสอบผ่านแพลตฟอร์มต่าง ๆ เพื่อวัดความรู้ความเข้าใจและฝึกทักษะการคิดวิเคราะห์</p>
+    </div>
+
+    <div class="grid g3 rv">
+      <!-- อันที่ 1: Wayground -->
+      <div class="panel">
+        <span class="num">๑</span>
+        <div class="meta">แบบทดสอบที่ 1 · Wayground</div>
+        <h3>Wayground Quiz</h3>
+        <p>กิจกรรมแบบทดสอบผ่านแพลตฟอร์ม Wayground ฝึกทักษะการแก้ปัญหาและการคิดอย่างเป็นระบบ</p>
+        <div class="cta" style="margin-top:22px">
+          <a href="https://wayground.com/join/quiz/6ab100e463e7021c147f12ab/start?studentShare=true" target="_blank" rel="noopener noreferrer" class="btn btn-p" style="width:100%;justify-content:center">เข้าเล่น Wayground →</a>
+        </div>
+      </div>
+
+      <!-- อันที่ 2: Gimkit -->
+      <div class="panel">
+        <span class="num">๒</span>
+        <div class="meta">แบบทดสอบที่ 2 · Gimkit</div>
+        <h3>Gimkit Challenge</h3>
+        <p>ทบทวนเนื้อหาแบบเกมสุดสนุกผ่าน Gimkit สะสมคะแนนและแข่งขันตอบคำถามแบบเรียลไทม์</p>
+        <div class="cta" style="margin-top:22px">
+          <a href="https://www.gimkit.com/view/6ab1016384a5d68fb3019758" target="_blank" rel="noopener noreferrer" class="btn btn-p" style="width:100%;justify-content:center">เข้าเล่น Gimkit →</a>
+        </div>
+      </div>
+
+      <!-- อันที่ 3: Kahoot -->
+      <div class="panel">
+        <span class="num">๓</span>
+        <div class="meta">แบบทดสอบที่ 3 · Kahoot!</div>
+        <h3>Kahoot! Battle</h3>
+        <p>ประลองความเร็วและความถูกต้องผ่านเกมตอบคำถาม Kahoot! พร้อมสรุปคะแนนทันทีหลังจบเกม</p>
+        <div class="cta" style="margin-top:22px">
+          <a href="https://create.kahoot.it/details/7a23cf04-69a9-46da-b7ef-95518faba207" target="_blank" rel="noopener noreferrer" class="btn btn-p" style="width:100%;justify-content:center">เข้าเล่น Kahoot! →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 07 EBOOK (เปิดอ่านในหน้าเว็บได้ทันที) ================= -->
+<section class="sec alt" id="ebook">
+  <div class="wrap">
+    <div class="shead rv" style="text-align:center;margin:0 auto 36px">
+      <span class="sno">ส่วนที่ 07</span>
+      <h2>หนังสืออิเล็กทรอนิกส์ (E-Book)</h2>
+      <p>เอกสารประกอบการเรียนฉบับเต็ม สามารถเปิดอ่าน พลิกหน้า และกดปุ่มเต็มจอ (Fullscreen) ได้ทันทีในหน้านี้</p>
+    </div>
+    
+    <div class="ebook-frame rv">
+      <iframe src="https://online.fliphtml5.com/pytwb/uxbj/"
+        title="คู่มืออัลกอริทึมสำหรับผู้เริ่มต้น"
+        seamless="seamless"
+        scrolling="no"
+        frameborder="0"
+        allowtransparency="true"
+        allowfullscreen="true"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <h4>วิทยาการคำนวณ · อัลกอริทึมและการแก้ปัญหา</h4>
+        <p style="max-width:420px">
+          สื่อการเรียนรู้ออนไลน์สำหรับระดับมัธยมศึกษาปีที่ 1
+          ออกแบบให้เรียนรู้ได้ด้วยตนเอง ทั้งในและนอกห้องเรียน
+        </p>
+      </div>
+      <div>
+        <h4>ลิงก์ด่วน</h4>
+        <ul class="flist">
+          <li><a href="#content">เนื้อหาบทเรียน</a></li>
+          <li><a href="#podcast">พอดแคสต์</a></li>
+          <li><a href="#video">วิดีโอบทเรียน</a></li>
+          <li><a href="#quiz">แบบทดสอบ</a></li>
+          <li><a href="#ebook">เปิดอ่าน E-Book</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>กลุ่มสาระการเรียนรู้</h4>
+        <ul class="flist">
+          <li>กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี</li>
+          <li>ระดับชั้นมัธยมศึกษาปีที่ 1</li>
+        </ul>
+      </div>
+    </div>
+    <div class="fbot">
+      <span>© 2026 สื่อการเรียนรู้วิทยาการคำนวณ · สงวนลิขสิทธิ์</span>
+      <span>ผลิตด้วยเครื่องมือ AI ภายใต้การตรวจสอบของผู้สอน</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ---- ระบบสลับธีม 2 โหมด (สว่าง / มืด) ---- */
+const root = document.documentElement;
+const themeBtn = document.getElementById('themeBtn');
+const themeIcon = document.getElementById('themeIcon');
+const themeLabel = document.getElementById('themeLabel');
+
+const saved = localStorage.getItem('theme');
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+setTheme(saved === 'dark' || (!saved && prefersDark) ? 'dark' : 'light');
+
+function setTheme(t){
+  root.setAttribute('data-theme', t);
+  if(t === 'dark'){
+    themeIcon.textContent = '☀';
+    themeLabel.textContent = 'โหมดมืด';
+    themeBtn.title = 'ตอนนี้: โหมดมืด (คลิกเพื่อเปลี่ยนเป็นโหมดสว่าง)';
+  } else {
+    themeIcon.textContent = '☾';
+    themeLabel.textContent = 'โหมดสว่าง';
+    themeBtn.title = 'ตอนนี้: โหมดสว่าง (คลิกเพื่อเปลี่ยนเป็นโหมดมืด)';
+  }
+  localStorage.setItem('theme', t);
+  if (window.fxSync) window.fxSync();
+}
+
+themeBtn.addEventListener('click', () => {
+  const current = root.getAttribute('data-theme');
+  setTheme(current === 'dark' ? 'light' : 'dark');
+});
+
+/* ---- เมนูมือถือ ---- */
+const burger = document.getElementById('burger');
+const menu = document.getElementById('menu');
+burger.addEventListener('click', () => menu.classList.toggle('open'));
+menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu.classList.remove('open')));
+
+/* ---- Reveal on scroll ---- */
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: .12 });
+document.querySelectorAll('.rv').forEach((el, i) => {
+  el.style.transitionDelay = (i % 4) * 70 + 'ms';
+  io.observe(el);
+});
+
+/* ---- พื้นหลังสัญลักษณ์ร่วง ---- */
+(function(){
+  const cv = document.getElementById('fx');
+  const ctx = cv.getContext('2d');
+  const GLYPHS = ['0','1','◇','▭','○','▱','→','↓','{ }','< >','if','loop','01','10'];
+  let W, H, bits = [], color = '#946816';
+
+  window.fxSync = () => {
+    color = getComputedStyle(root).getPropertyValue('--fx').trim() || '#946816';
+    bits.forEach(b => {
+      b.c = color;
+    });
+  };
+
+  function resize(){
+    W = cv.width = innerWidth;
+    H = cv.height = innerHeight;
+    const n = Math.min(Math.round(W / 26), 60);
+    bits = Array.from({length: n}, () => spawn(true));
+    window.fxSync();
+  }
+  function spawn(init){
+    return {
+      x: Math.random() * W,
+      y: init ? Math.random() * H : -40,
+      size: 11 + Math.random() * 15,
+      vy: .25 + Math.random() * .75,
+      drift: (Math.random() - .5) * .25,
+      alpha: .10 + Math.random() * .30,
+      rot: (Math.random() - .5) * .6,
+      vr: (Math.random() - .5) * .006,
+      g: GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
+      c: color
+    };
+  }
+  function loop(){
+    ctx.clearRect(0, 0, W, H);
+    bits.forEach((b, i) => {
+      b.y += b.vy;
+      b.x += b.drift;
+      b.rot += b.vr;
+      if (b.y > H + 40) bits[i] = spawn(false);
+      ctx.save();
+      ctx.translate(b.x, b.y);
+      ctx.rotate(b.rot);
+      ctx.globalAlpha = b.alpha;
+      ctx.fillStyle = b.c;
+      ctx.font = b.size + "px 'Sarabun', sans-serif";
+      ctx.fillText(b.g, 0, 0);
+      ctx.restore();
+    });
+    requestAnimationFrame(loop);
+  }
+  addEventListener('resize', resize);
+  resize();
+  loop();
+})();
+
+/* ---- YouTube Cover Script (พอดแคสต์และวิดีโอ) ---- */
+document.querySelectorAll('.vframe').forEach(frame => {
+  const cover = frame.querySelector('.vcover');
+  const iframe = frame.querySelector('iframe');
+  if (cover && iframe) {
+    cover.addEventListener('click', () => {
+      iframe.src = iframe.getAttribute('data-src');
+      frame.classList.add('is-playing');
+    });
+  }
+});
+</script>
+</body>
+</html>
